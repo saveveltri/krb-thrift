@@ -74,7 +74,13 @@ public class Server implements ServiceBase {
     
     // Log in using the keytab
     UserGroupInformation.loginUserFromKeytab(principal, opts.keytab);
-    
+
+    log.info("principal: {}", principal);
+    log.info("name: {}", name);
+    log.info("instance: {}", instance);
+    log.info("primary: {}", primary);
+    log.info("instance: {}", instance);
+
     // Get the info from our login
     UserGroupInformation serverUser = UserGroupInformation.getLoginUser();
     log.info("Current user: {}", serverUser);

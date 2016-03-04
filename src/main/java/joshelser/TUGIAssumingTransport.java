@@ -24,6 +24,8 @@ import java.security.PrivilegedExceptionAction;
 import org.apache.hadoop.security.UserGroupInformation;
 import org.apache.thrift.transport.TTransport;
 import org.apache.thrift.transport.TTransportException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The Thrift SASL transports call Sasl.createSaslServer and Sasl.createSaslClient inside open(). So, we need to assume the correct UGI when the transport is
@@ -34,6 +36,7 @@ import org.apache.thrift.transport.TTransportException;
  * Lifted from Apache Hive 0.14
  */
 public class TUGIAssumingTransport extends TFilterTransport {
+  private static final Logger log = LoggerFactory.getLogger(TUGIAssumingTransport.class);
   protected UserGroupInformation ugi;
 
   public TUGIAssumingTransport(TTransport wrapped, UserGroupInformation ugi) {
@@ -44,16 +47,26 @@ public class TUGIAssumingTransport extends TFilterTransport {
   @Override
   public void open() throws TTransportException {
     try {
+
+      UserGroupInformation currentUser = UserGroupInformation.getCurrentUser();
+      log.info("Current user: {}", currentUser);
+
       ugi.doAs(new PrivilegedExceptionAction<Void>() {
         @Override
         public Void run() {
           try {
+
+            UserGroupInformation currentUser = UserGroupInformation.getCurrentUser();
+            log.info("Current user: {}", currentUser);
+
             getWrapped().open();
           } catch (TTransportException tte) {
             // Wrap the transport exception in an RTE, since UGI.doAs() then goes
             // and unwraps this for us out of the doAs block. We then unwrap one
             // more time in our catch clause to get back the TTE. (ugh)
             throw new RuntimeException(tte);
+          } catch (IOException e) {
+            e.printStackTrace();
           }
           return null;
         }

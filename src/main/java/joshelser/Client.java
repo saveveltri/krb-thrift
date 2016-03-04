@@ -49,7 +49,7 @@ public class Client implements ServiceBase {
     @Parameter(names = {"-p", "--primary"}, required = true, description = "Leading component of the Kerberos principal for the server")
     private String primary;
 
-    @Parameter(names = {"-i", "--instance"}, required = true, description = "Second component of the Kerberos principal for the server")
+    @Parameter(names = {"-i", "--instance"}, required = false, description = "Second component of the Kerberos principal for the server")
     private String instance;
 
     @Parameter(names = {"-d", "--dir"}, required = false, description = "HDFS directory to perform `ls` on")
