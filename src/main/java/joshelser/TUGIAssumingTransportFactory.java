@@ -23,6 +23,8 @@ import org.apache.thrift.transport.TTransport;
 import org.apache.thrift.transport.TTransportFactory;
 
 import com.google.common.base.Preconditions;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A TransportFactory that wraps another one, but assumes a specified UGI before calling through.
@@ -32,6 +34,9 @@ import com.google.common.base.Preconditions;
  * Borrowed from Apache Hive 0.14
  */
 public class TUGIAssumingTransportFactory extends TTransportFactory {
+
+  private static final Logger log = LoggerFactory.getLogger(TUGIAssumingTransportFactory.class);
+
   private final UserGroupInformation ugi;
   private final TTransportFactory wrapped;
 
@@ -48,6 +53,9 @@ public class TUGIAssumingTransportFactory extends TTransportFactory {
     return ugi.doAs(new PrivilegedAction<TTransport>() {
       @Override
       public TTransport run() {
+
+        log.debug("The current UGI for TUGIAssumingTransportFactory is {}", ugi.getUserName());
+
         return wrapped.getTransport(trans);
       }
     });
