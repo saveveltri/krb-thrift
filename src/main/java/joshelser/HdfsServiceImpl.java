@@ -44,6 +44,7 @@ public class HdfsServiceImpl implements HdfsService.Iface {
   public String ls(String directory) throws TException {
     StringBuilder sb = new StringBuilder(64);
     try {
+      System.err.println("Running as " +  UserGroupInformation.getCurrentUser());
       log.debug("Running as {}", UserGroupInformation.getCurrentUser());
       for (FileStatus stat : fs.listStatus(new Path(directory))) {
         sb.append(stat.getPath().getName());
