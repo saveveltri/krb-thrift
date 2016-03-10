@@ -18,12 +18,14 @@ package joshelser;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.security.PrivilegedExceptionAction;
 
 import joshelser.thrift.HdfsService;
 
 import org.apache.hadoop.fs.FileStatus;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.security.SecurityUtil;
 import org.apache.hadoop.security.UserGroupInformation;
 import org.apache.thrift.TException;
 import org.slf4j.Logger;
@@ -33,41 +35,50 @@ import org.slf4j.LoggerFactory;
  *
  */
 public class HdfsServiceImpl implements HdfsService.Iface {
-  private static final Logger log = LoggerFactory.getLogger(HdfsServiceImpl.class);
-  private FileSystem fs;
+    private static final Logger log = LoggerFactory.getLogger(HdfsServiceImpl.class);
+    private FileSystem fs;
 
-  public HdfsServiceImpl(FileSystem fs) {
-    this.fs = fs;
-  }
-
-  @Override
-  public String ls(String directory) throws TException {
-    StringBuilder sb = new StringBuilder(64);
-    try {
-      System.err.println("Running as " +  UserGroupInformation.getCurrentUser());
-      log.debug("Running as {}", UserGroupInformation.getCurrentUser());
-      for (FileStatus stat : fs.listStatus(new Path(directory))) {
-        sb.append(stat.getPath().getName());
-        if (stat.isDirectory()) {
-          sb.append("/");
-        }
-        sb.append("\n");
-      }
-    } catch (FileNotFoundException e) {
-      System.err.println("Got FileNotFoundException");
-      e.printStackTrace(System.err);
-      throw new TException(e);
-    } catch (IllegalArgumentException e) {
-      System.err.println("Got IllegalArgumentException");
-      e.printStackTrace(System.err);
-      throw new TException(e);
-    } catch (IOException e) {
-      System.err.println("Got IOException");
-      e.printStackTrace(System.err);
-      throw new TException(e);
+    public HdfsServiceImpl(FileSystem fs) {
+        this.fs = fs;
     }
 
-    return sb.toString();
-  }
+    @Override
+    public String ls(final String directory) throws TException {
+        try {
+            return SecurityUtil.doAsCurrentUser(new PrivilegedExceptionAction<String>() {
 
+                @Override
+                public String run() throws Exception {
+                    StringBuilder sb = new StringBuilder(64);
+                    try {
+                        System.err.println("Running as " + UserGroupInformation.getCurrentUser());
+                        log.debug("Running as {}", UserGroupInformation.getCurrentUser());
+                        for (FileStatus stat : fs.listStatus(new Path(directory))) {
+                            sb.append(stat.getPath().getName());
+                            if (stat.isDirectory()) {
+                                sb.append("/");
+                            }
+                            sb.append("\n");
+                        }
+                    } catch (FileNotFoundException e) {
+                        System.err.println("Got FileNotFoundException");
+                        e.printStackTrace(System.err);
+                        throw new TException(e);
+                    } catch (IllegalArgumentException e) {
+                        System.err.println("Got IllegalArgumentException");
+                        e.printStackTrace(System.err);
+                        throw new TException(e);
+                    } catch (IOException e) {
+                        System.err.println("Got IOException");
+                        e.printStackTrace(System.err);
+                        throw new TException(e);
+                    }
+
+                    return sb.toString();
+                }
+            });
+        } catch (Exception e) {
+            throw new TException(e);
+        }
+    }
 }
