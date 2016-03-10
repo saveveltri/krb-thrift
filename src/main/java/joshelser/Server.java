@@ -64,6 +64,9 @@ public class Server implements ServiceBase {
     opts.parseArgs(Server.class, args);
     
     Configuration conf = new Configuration();
+    conf.set("fs.hdfs.impl", org.apache.hadoop.hdfs.DistributedFileSystem.class.getName());
+    conf.set("fs.file.impl", org.apache.hadoop.fs.LocalFileSystem.class.getName());
+    conf.set("hadoop.security.authentication", "KERBEROS");
     FileSystem fs = FileSystem.get(conf);
     
     // Parse out the primary/instance@DOMAIN from the principal
