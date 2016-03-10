@@ -53,6 +53,10 @@ public class HdfsServiceImpl implements HdfsService.Iface {
                     try {
                         System.err.println("Running as " + UserGroupInformation.getCurrentUser());
                         log.debug("Running as {}", UserGroupInformation.getCurrentUser());
+                        System.err.println("Krb cred " + UserGroupInformation.getCurrentUser().hasKerberosCredentials());
+                        System.err.println("Credentials " + UserGroupInformation.getCurrentUser().getCredentials());
+                        System.err.println("Tokens " + UserGroupInformation.getCurrentUser().getTokens());
+                        System.err.println("TokenIdentifiers " + UserGroupInformation.getCurrentUser().getTokenIdentifiers());
                         for (FileStatus stat : fs.listStatus(new Path(directory))) {
                             sb.append(stat.getPath().getName());
                             if (stat.isDirectory()) {
