@@ -29,6 +29,7 @@ import javax.security.sasl.SaslException;
 import com.sun.security.auth.callback.TextCallbackHandler;
 import joshelser.thrift.HdfsService;
 
+import org.apache.hadoop.security.SecurityUtil;
 import org.apache.hadoop.security.UserGroupInformation;
 import org.apache.thrift.protocol.TBinaryProtocol;
 import org.apache.thrift.transport.TSaslClientTransport;
@@ -68,10 +69,13 @@ public class Client implements ServiceBase {
 //    System.setProperty("java.security.krb5.conf", "/etc/krb5.conf");
 //    System.setProperty("java.security.auth.login.config", "krb5Login.conf");
 
+
+
     try {
       lc = new LoginContext("ThriftClient", new TextCallbackHandler());
       lc.login();
-        Subject.doAs(lc.getSubject(), new PrivilegedExceptionAction<Void>() {
+      UserGroupInformation.loginUserFromSubject(lc.getSubject());
+      SecurityUtil.doAsCurrentUser(new PrivilegedExceptionAction<Void>() {
           public Void run() throws Exception {
             runClient(args);
             return null;
