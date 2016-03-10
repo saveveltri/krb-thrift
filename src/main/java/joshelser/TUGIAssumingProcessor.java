@@ -60,6 +60,8 @@ public class TUGIAssumingProcessor implements TProcessor {
 
     UserGroupInformation clientUgi = null;
     try {
+      System.err.println("################ ==> endUser " + endUser);
+      System.err.println("################ ==> UserGroupInformation.getLoginUser() " + UserGroupInformation.getLoginUser());
       clientUgi = UserGroupInformation.createProxyUser(endUser, UserGroupInformation.getLoginUser());
       final String remoteUser = clientUgi.getShortUserName();
       System.err.println("Executing action as {} " + remoteUser);

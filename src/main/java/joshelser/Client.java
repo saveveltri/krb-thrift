@@ -16,11 +16,17 @@
  */
 package joshelser;
 
+import java.security.PrivilegedExceptionAction;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.security.auth.Subject;
+import javax.security.auth.login.LoginContext;
+import javax.security.auth.login.LoginException;
 import javax.security.sasl.Sasl;
+import javax.security.sasl.SaslException;
 
+import com.sun.security.auth.callback.TextCallbackHandler;
 import joshelser.thrift.HdfsService;
 
 import org.apache.hadoop.security.UserGroupInformation;
@@ -56,7 +62,27 @@ public class Client implements ServiceBase {
     private String dir = "/";
   }
 
-  public static void main(String[] args) throws Exception {
+  public static void main(final String[] args) throws Exception {
+    LoginContext lc = null;
+
+//    System.setProperty("java.security.krb5.conf", "/etc/krb5.conf");
+//    System.setProperty("java.security.auth.login.config", "krb5Login.conf");
+
+    try {
+      lc = new LoginContext("ThriftClient", new TextCallbackHandler());
+      lc.login();
+        Subject.doAs(lc.getSubject(), new PrivilegedExceptionAction<Void>() {
+          public Void run() throws Exception {
+            runClient(args);
+            return null;
+          }
+        });
+    } catch (Exception e) {
+      log.error("Error trying to connect to the service", e);
+    }
+  }
+
+  private static void runClient(String[] args) throws Exception {
     Opts opts = new Opts();
 
     // Parse the options
