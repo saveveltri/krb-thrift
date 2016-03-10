@@ -48,6 +48,7 @@ public class TUGIAssumingProcessor implements TProcessor {
 
   @Override
   public boolean process(final TProtocol inProt, final TProtocol outProt) throws TException {
+    System.err.println("inside process");
     TTransport trans = inProt.getTransport();
     if (!(trans instanceof TSaslServerTransport)) {
       throw new TException("Unexpected non-SASL transport " + trans.getClass());
@@ -61,6 +62,7 @@ public class TUGIAssumingProcessor implements TProcessor {
     try {
       clientUgi = UserGroupInformation.createProxyUser(endUser, UserGroupInformation.getLoginUser());
       final String remoteUser = clientUgi.getShortUserName();
+      System.err.println("Executing action as {} " + remoteUser);
       log.debug("Executing action as {}", remoteUser);
       return clientUgi.doAs(new PrivilegedExceptionAction<Boolean>() {
         @Override
