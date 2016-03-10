@@ -23,7 +23,8 @@ public class HDFSAccess {
             final Configuration conf = new Configuration();
             conf.set("fs.hdfs.impl", org.apache.hadoop.hdfs.DistributedFileSystem.class.getName());
             conf.set("fs.file.impl", LocalFileSystem.class.getName());
-            conf.set("hadoop.security.authentication", "KERBEROS");
+//            conf.set("hadoop.security.authentication", "KERBEROS");
+            final FileSystem fs = FileSystem.get(conf);
 
             lc = new LoginContext("ThriftClient", new TextCallbackHandler());
             lc.login();
@@ -35,12 +36,10 @@ public class HDFSAccess {
             SecurityUtil.doAsCurrentUser(new PrivilegedExceptionAction<Object>() {
                 public Object run() throws Exception {
 
-                    FileSystem fs = FileSystem.get(new URI("hdfs://radicalbit-master:8020"), conf);
-                    RemoteIterator<LocatedFileStatus> iterator = fs.listFiles(new Path("hdfs://radicalbit-master:8020/"), true);
+                    FileStatus[] files = fs.listStatus(new Path("/"));
 
-                    while (iterator.hasNext()) {
-                        LocatedFileStatus lfs = iterator.next();
-                        System.out.println(lfs.toString());
+                    for (FileStatus fileStatus : files) {
+                        System.out.println(fileStatus.toString());
                     }
 
                     return null;
