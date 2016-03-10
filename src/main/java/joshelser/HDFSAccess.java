@@ -25,7 +25,7 @@ public class HDFSAccess {
             conf.set("fs.file.impl", LocalFileSystem.class.getName());
             conf.set("hadoop.security.authentication", "KERBEROS");
 
-            lc = new LoginContext("SampleClient", new TextCallbackHandler());
+            lc = new LoginContext("ThriftClient", new TextCallbackHandler());
             lc.login();
 
             UserGroupInformation.setConfiguration(conf);
