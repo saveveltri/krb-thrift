@@ -68,9 +68,15 @@ public class TUGIAssumingProcessor implements TProcessor {
         @Override
         public Boolean run() {
           try {
+            System.err.println("################ ==> clientUgi.doAs UserGroupInformation.getCurrentUser() " + UserGroupInformation.getCurrentUser());
+            System.err.println("################ ==> clientUgi.doAs UserGroupInformation.getLoginUser() " + UserGroupInformation.getLoginUser());
             return wrapped.process(inProt, outProt);
           } catch (TException te) {
+            te.printStackTrace();
             throw new RuntimeException(te);
+          } catch (IOException e) {
+            e.printStackTrace();
+            throw new RuntimeException(e);
           }
         }
       });
