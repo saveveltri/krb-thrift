@@ -20,9 +20,6 @@ public class HDFSAccess {
         LoginContext lc;
 
         try {
-            System.setProperty("java.security.krb5.conf", "/etc/krb5.conf");
-            System.setProperty("java.security.auth.login.config", "/tmp/krb5Login-hadoop.conf");
-
             final Configuration conf = new Configuration();
             conf.set("fs.hdfs.impl", org.apache.hadoop.hdfs.DistributedFileSystem.class.getName());
             conf.set("fs.file.impl", LocalFileSystem.class.getName());
