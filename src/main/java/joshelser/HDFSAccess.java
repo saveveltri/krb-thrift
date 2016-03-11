@@ -23,19 +23,25 @@ public class HDFSAccess {
             final Configuration conf = new Configuration();
             conf.set("fs.hdfs.impl", org.apache.hadoop.hdfs.DistributedFileSystem.class.getName());
             conf.set("fs.file.impl", LocalFileSystem.class.getName());
-//            conf.set("hadoop.security.authentication", "KERBEROS");
-            final FileSystem fs = FileSystem.get(conf);
+            conf.set("hadoop.security.authentication", "KERBEROS");
+
 
             lc = new LoginContext("ThriftClient", new TextCallbackHandler());
             lc.login();
 
             UserGroupInformation.setConfiguration(conf);
 
-            UserGroupInformation.loginUserFromSubject(lc.getSubject());
+            //UserGroupInformation.loginUserFromSubject(lc.getSubject());
+            UserGroupInformation.loginUserFromKeytab("hdfs-radicalbit_test_cluster@RADICALBIT.IO", "hdfs.headless.keytab");
 
-            SecurityUtil.doAsCurrentUser(new PrivilegedExceptionAction<Object>() {
-                public Object run() throws Exception {
+            System.out.println("UserGroupInformation.getCurrentUser() " + UserGroupInformation.getCurrentUser());
 
+
+            SecurityUtils.runSecured(new SecurityUtils.FlinkSecuredRunner<Void>(){
+
+                @Override
+                public Void run(Configuration hdConf) throws Exception {
+                    final FileSystem fs = FileSystem.get(hdConf);
                     FileStatus[] files = fs.listStatus(new Path("/"));
 
                     for (FileStatus fileStatus : files) {
@@ -45,6 +51,14 @@ public class HDFSAccess {
                     return null;
                 }
             });
+
+//            //SecurityUtil.doAsCurrentUser(new PrivilegedExceptionAction<Object>() {
+//            UserGroupInformation.getCurrentUser().doAs(new PrivilegedExceptionAction<Object>() {
+//                public Object run() throws Exception {
+//
+//
+//                }
+//            });
 
         } catch (Exception e) {
             e.printStackTrace();
