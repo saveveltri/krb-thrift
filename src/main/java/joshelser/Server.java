@@ -92,7 +92,7 @@ public class Server implements ServiceBase {
     TServerSocket serverTransport = new TServerSocket(opts.port);
     
     // Wrap our implementation with the interface's processor
-    HdfsService.Processor<Iface> processor = new HdfsService.Processor<Iface>(new HdfsServiceImpl(fs));
+    HdfsService.Processor<Iface> processor = new HdfsService.Processor<Iface>(new HdfsServiceImpl(conf));
     
     // Use authorization and confidentiality
     Map<String,String> saslProperties = new HashMap<String,String>();
