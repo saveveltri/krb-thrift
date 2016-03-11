@@ -64,26 +64,26 @@ public class Client implements ServiceBase {
   }
 
   public static void main(final String[] args) throws Exception {
-    LoginContext lc = null;
-
-//    System.setProperty("java.security.krb5.conf", "/etc/krb5.conf");
-//    System.setProperty("java.security.auth.login.config", "krb5Login.conf");
-
-
-
-    try {
-      lc = new LoginContext("ThriftClient", new TextCallbackHandler());
-      lc.login();
-      UserGroupInformation.loginUserFromSubject(lc.getSubject());
-      SecurityUtil.doAsCurrentUser(new PrivilegedExceptionAction<Void>() {
-          public Void run() throws Exception {
+//    LoginContext lc = null;
+//
+////    System.setProperty("java.security.krb5.conf", "/etc/krb5.conf");
+////    System.setProperty("java.security.auth.login.config", "krb5Login.conf");
+//
+//
+//
+//    try {
+//      lc = new LoginContext("ThriftClient", new TextCallbackHandler());
+//      lc.login();
+//      UserGroupInformation.loginUserFromSubject(lc.getSubject());
+//      SecurityUtil.doAsCurrentUser(new PrivilegedExceptionAction<Void>() {
+//          public Void run() throws Exception {
             runClient(args);
-            return null;
-          }
-        });
-    } catch (Exception e) {
-      log.error("Error trying to connect to the service", e);
-    }
+//            return null;
+//          }
+//        });
+//    } catch (Exception e) {
+//      log.error("Error trying to connect to the service", e);
+//    }
   }
 
   private static void runClient(String[] args) throws Exception {
