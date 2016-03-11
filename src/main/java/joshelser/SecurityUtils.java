@@ -19,7 +19,7 @@ public final class SecurityUtils {
     private static final Logger LOG = LoggerFactory.getLogger(SecurityUtils.class);
 
     // load Hadoop configuration when loading the security utils.
-    private static Configuration hdConf = new Configuration();
+    public static Configuration hdConf = new Configuration();
     {
         hdConf.set("fs.hdfs.impl", org.apache.hadoop.hdfs.DistributedFileSystem.class.getName());
         hdConf.set("fs.file.impl", LocalFileSystem.class.getName());
@@ -35,19 +35,19 @@ public final class SecurityUtils {
         UserGroupInformation.setConfiguration(hdConf);
         UserGroupInformation ugi = UserGroupInformation.getCurrentUser();
         if (!ugi.hasKerberosCredentials()) {
-            LOG.error("Security is enabled but no Kerberos credentials have been found. " +
+            new RuntimeException("Security is enabled but no Kerberos credentials have been found. " +
                     "You may authenticate using the kinit command.");
         }
         return ugi.doAs(new PrivilegedExceptionAction<T>() {
             @Override
             public T run() throws Exception {
-                return runner.run(hdConf);
+                return runner.run();
             }
         });
     }
 
     public interface FlinkSecuredRunner<T> {
-        T run(Configuration hdConf) throws Exception;
+        T run() throws Exception;
     }
 
     /**

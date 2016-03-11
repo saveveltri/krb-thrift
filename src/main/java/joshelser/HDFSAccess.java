@@ -20,16 +20,13 @@ public class HDFSAccess {
         LoginContext lc;
 
         try {
-            final Configuration conf = new Configuration();
-            conf.set("fs.hdfs.impl", org.apache.hadoop.hdfs.DistributedFileSystem.class.getName());
-            conf.set("fs.file.impl", LocalFileSystem.class.getName());
-            conf.set("hadoop.security.authentication", "KERBEROS");
-
 
             lc = new LoginContext("ThriftClient", new TextCallbackHandler());
             lc.login();
 
-            UserGroupInformation.setConfiguration(conf);
+            final FileSystem fs = FileSystem.get(SecurityUtils.hdConf);
+
+            System.out.println("Security is enabled " + SecurityUtils.isSecurityEnabled());
 
             //UserGroupInformation.loginUserFromSubject(lc.getSubject());
             UserGroupInformation.loginUserFromKeytab("hdfs-radicalbit_test_cluster@RADICALBIT.IO", "hdfs.headless.keytab");
@@ -40,8 +37,8 @@ public class HDFSAccess {
             SecurityUtils.runSecured(new SecurityUtils.FlinkSecuredRunner<Void>(){
 
                 @Override
-                public Void run(Configuration hdConf) throws Exception {
-                    final FileSystem fs = FileSystem.get(hdConf);
+                public Void run() throws Exception {
+
                     FileStatus[] files = fs.listStatus(new Path("/"));
 
                     for (FileStatus fileStatus : files) {
