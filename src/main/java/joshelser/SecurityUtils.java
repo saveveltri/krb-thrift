@@ -1,6 +1,7 @@
 package joshelser;
 
 import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.fs.LocalFileSystem;
 import org.apache.hadoop.security.UserGroupInformation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,7 +20,11 @@ public final class SecurityUtils {
 
     // load Hadoop configuration when loading the security utils.
     private static Configuration hdConf = new Configuration();
-
+    {
+        hdConf.set("fs.hdfs.impl", org.apache.hadoop.hdfs.DistributedFileSystem.class.getName());
+        hdConf.set("fs.file.impl", LocalFileSystem.class.getName());
+        hdConf.set("hadoop.security.authentication", "KERBEROS");
+    }
 
     public static boolean isSecurityEnabled() {
         UserGroupInformation.setConfiguration(hdConf);
