@@ -30,9 +30,12 @@ import org.slf4j.LoggerFactory;
 import javax.security.auth.Subject;
 import javax.security.auth.login.LoginContext;
 import javax.security.sasl.Sasl;
+import java.security.Principal;
 import java.security.PrivilegedExceptionAction;
 import java.util.HashMap;
 import java.util.Map;
+
+import static joshelser.GetKrbUser.kerberosPlaygroundConfiguration;
 
 /**
  * Client configured to pass its UserGroupInformation/Kerberos credentials across a Thrift RPC
@@ -98,6 +101,22 @@ public class ClientJaas implements ServiceBase {
     saslProperties.put(Sasl.QOP, "auth-conf");
 
     log.info("Security is enabled: {}", UserGroupInformation.isSecurityEnabled());
+
+    //////////
+
+    Subject subject = new Subject();
+
+    LoginContext loginContext = new LoginContext("kerberos-playground", subject, null,
+            kerberosPlaygroundConfiguration);
+
+    loginContext.login();
+
+
+    log.info("Current subject: {}", subject);
+    log.info("Current ugi from subject: {}", UserGroupInformation.getUGIFromSubject(subject));
+
+    //////////
+
 
     // Log in via UGI, ensures we have logged in with our KRB credentials
     UserGroupInformation currentUser = UserGroupInformation.getCurrentUser();
