@@ -30,6 +30,7 @@ import org.slf4j.LoggerFactory;
 import javax.security.auth.Subject;
 import javax.security.auth.login.LoginContext;
 import javax.security.sasl.Sasl;
+import java.security.AccessController;
 import java.security.Principal;
 import java.security.PrivilegedExceptionAction;
 import java.util.HashMap;
@@ -104,12 +105,7 @@ public class ClientJaas implements ServiceBase {
 
     //////////
 
-    Subject subject = new Subject();
-
-    LoginContext loginContext = new LoginContext("kerberos-playground", subject, null,
-            kerberosPlaygroundConfiguration);
-
-    loginContext.login();
+    Subject subject = Subject.getSubject(AccessController.getContext());
 
 
     log.info("Current subject: {}", subject);
