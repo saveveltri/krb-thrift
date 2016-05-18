@@ -69,6 +69,8 @@ public class ClientJaas implements ServiceBase {
 
       Subject s = lc.getSubject();
 
+      log.info("subject s : " +s);
+
       Subject.doAs(s, new PrivilegedExceptionAction<Void>() {
         @Override
         public Void run() throws Exception {
