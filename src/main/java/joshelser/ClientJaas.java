@@ -105,11 +105,11 @@ public class ClientJaas implements ServiceBase {
 
     //////////
 
-    Subject subject = Subject.getSubject(AccessController.getContext());
-
-
-    log.info("Current subject: {}", subject);
-    log.info("Current ugi from subject: {}", UserGroupInformation.getUGIFromSubject(subject));
+//    Subject subject = Subject.getSubject(AccessController.getContext());
+//
+//
+//    log.info("Current subject: {}", subject);
+//    log.info("Current ugi from subject: {}", UserGroupInformation.getUGIFromSubject(subject));
 
     //////////
 
