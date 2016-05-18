@@ -33,7 +33,7 @@ public final class SecurityUtils {
         System.out.println("########## ===>ugi " + ugi);
         System.out.println("########## ===>ugi " + ugi);
         if (!ugi.hasKerberosCredentials()) {
-            new RuntimeException("Security is enabled but no Kerberos credentials have been found. " +
+            throw new RuntimeException("Security is enabled but no Kerberos credentials have been found. " +
                     "You may authenticate using the kinit command.");
         }
         return ugi.doAs(new PrivilegedExceptionAction<T>() {
