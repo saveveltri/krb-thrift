@@ -30,7 +30,7 @@ public class GetKrbUser {
             put("renewTGT", "true");
           }});
 
-  public static Configuration kerberosPlaygroundConfiguration = new Configuration() {
+  private static Configuration kerberosPlaygroundConfiguration = new Configuration() {
     @Override
     public AppConfigurationEntry[] getAppConfigurationEntry(String name) {
       return new AppConfigurationEntry[]{KERBEROS_LOGIN};
